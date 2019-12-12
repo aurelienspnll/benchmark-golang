@@ -9,11 +9,12 @@ import (
 	"os"
 	"strconv"
 	"time"
+	// "github.com/shirou/gopsutil/mem"
 )
 
-func benchmark(concurrencyLimit int) time.Duration {
-	start := time.Now()
-	const size = 1000
+const size int = 1000
+
+func callJsonPlaceHolderApiWithChan(concurrencyLimit int) {
 	//const concurrencyLimit = 4
 	semaphoreChan := make(chan struct{}, concurrencyLimit)
 	resultsChan := make(chan string)
@@ -43,6 +44,18 @@ func benchmark(concurrencyLimit int) time.Duration {
 		r := <-resultsChan
 		result = append(result, r)
 	}
+	fmt.Println(len(result))
+}
+
+func benchmark(concurrencyLimit int) time.Duration {
+	start := time.Now()
+	// v, _ := mem.VirtualMemory()
+
+	callJsonPlaceHolderApiWithChan(concurrencyLimit)
+
+	// callJsonPlaceHolderApiWithWG(concurrencyLimit)
+
+	// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 	return time.Since(start)
 }
 
@@ -70,3 +83,38 @@ func checkError(message string, err error) {
 		log.Fatal(message, err)
 	}
 }
+
+// /*
+// If we only use WaitGroup, we will overload our processors and never have any returned values.
+// TODO: add a chan to manage the concurrency limit.
+// */
+// func callJsonPlaceHolderApiWithWG(concurrencyLimit int) {
+// 	// c := make(chan string, size)
+// 	var wg sync.WaitGroup
+// 	//wg.Add(size)
+// 	var result []string
+// 	for i := 0; i < size; i++ {
+// 		j := (i % 100) + 1
+// 		s := strconv.Itoa(j)
+// 		url := "https://jsonplaceholder.typicode.com/todos/" + s
+// 		// go checkUrl(url, &result)
+// 		wg.Add(1)
+// 		go func() {
+// 			resp, err := http.Get(url)
+// 			if err != nil {
+// 				return
+// 			}
+// 			bodyBytes, err := ioutil.ReadAll(resp.Body)
+// 			if err != nil {
+// 				log.Fatal(err)
+// 			}
+// 			//fmt.Println("hello")
+// 			// bodyString := string(bodyBytes)
+// 			body := string(bodyBytes)
+// 			result = append(result, body)
+// 			wg.Done() // Don't use defer here
+// 		}()
+// 	}
+// 	wg.Wait()
+// 	fmt.Println(len(result))
+// }
