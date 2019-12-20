@@ -9,12 +9,11 @@ import (
 	"os"
 	"strconv"
 	"time"
-	// "github.com/shirou/gopsutil/mem"
 )
 
 const size int = 1000
 
-func callJsonPlaceHolderApiWithChan(concurrencyLimit int) {
+func callJSONPlaceHolderAPIWithChan(concurrencyLimit int) {
 	//const concurrencyLimit = 4
 	semaphoreChan := make(chan struct{}, concurrencyLimit)
 	resultsChan := make(chan string)
@@ -49,13 +48,7 @@ func callJsonPlaceHolderApiWithChan(concurrencyLimit int) {
 
 func benchmark(concurrencyLimit int) time.Duration {
 	start := time.Now()
-	// v, _ := mem.VirtualMemory()
-
-	callJsonPlaceHolderApiWithChan(concurrencyLimit)
-
-	// callJsonPlaceHolderApiWithWG(concurrencyLimit)
-
-	// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
+	callJSONPlaceHolderAPIWithChan(concurrencyLimit)
 	return time.Since(start)
 }
 
